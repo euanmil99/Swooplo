@@ -1,0 +1,1 @@
+"build:server": "tsc -p tsconfig.server.json",

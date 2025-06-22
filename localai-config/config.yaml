@@ -1,0 +1,197 @@
+# LocalAI Configuration for Social Affiliate Pro
+# This configuration optimizes LocalAI for social media content generation
+
+# Server configuration
+server:
+  host: 0.0.0.0
+  port: 8080
+  threads: 4
+  context_size: 4096
+  debug: false
+
+# Models configuration
+models:
+  # Text generation models
+  - name: llama-3.2-1b-instruct
+    backend: llama
+    parameters:
+      model: llama-3.2-1b-instruct:q4_k_m
+      temperature: 0.7
+      top_p: 0.9
+      top_k: 40
+      repeat_penalty: 1.1
+      stop:
+        - "Human:"
+        - "Assistant:"
+        - "###"
+        - "---"
+
+  # Vision model for image analysis
+  - name: llava-v1.5-7b
+    backend: llama
+    parameters:
+      model: llava-v1.5-7b:q4_k_m
+      temperature: 0.7
+      top_p: 0.9
+      top_k: 40
+      repeat_penalty: 1.1
+      stop:
+        - "Human:"
+        - "Assistant:"
+        - "###"
+        - "---"
+
+  # Image generation model
+  - name: stablediffusion
+    backend: diffusers
+    parameters:
+      model: stablediffusion
+      scheduler: "euler_a"
+      steps: 20
+      guidance_scale: 7.5
+      width: 1024
+      height: 1024
+
+  # Audio transcription model
+  - name: whisper-1
+    backend: whisper
+    parameters:
+      model: whisper-1
+      language: "en"
+      temperature: 0.0
+
+  # Text-to-speech model
+  - name: tts-1
+    backend: piper
+    parameters:
+      model: tts-1
+      voice: "alloy"
+      speed: 1.0
+
+# Galleries for model discovery
+galleries:
+  - name: "model-gallery"
+    url: "https://raw.githubusercontent.com/go-skynet/model-gallery/index/"
+    gallery: "https://github.com/go-skynet/model-gallery/raw/main/"
+
+# CORS configuration
+cors:
+  allowed_origins:
+    - "http://localhost:3000"
+    - "http://localhost:5000"
+    - "https://socialpilot.com"
+  allowed_methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  allowed_headers:
+    - Content-Type
+    - Authorization
+    - X-Requested-With
+
+# Rate limiting
+rate_limit:
+  enabled: true
+  requests_per_minute: 60
+  burst_size: 10
+
+# Logging configuration
+logging:
+  level: info
+  format: json
+  output: stdout
+
+# Cache configuration
+cache:
+  enabled: true
+  ttl: 3600
+  max_size: 1000
+
+# Security configuration
+security:
+  api_key_required: false
+  allowed_ips: []
+  max_request_size: "10MB"
+
+# Performance optimization
+performance:
+  enable_metrics: true
+  enable_profiling: false
+  max_concurrent_requests: 10
+  request_timeout: 300
+
+# Model-specific optimizations for social media content
+social_media_models:
+  # Twitter content generation
+  twitter:
+    max_tokens: 280
+    temperature: 0.8
+    top_p: 0.9
+    frequency_penalty: 0.1
+    presence_penalty: 0.1
+
+  # Instagram content generation
+  instagram:
+    max_tokens: 2200
+    temperature: 0.7
+    top_p: 0.9
+    frequency_penalty: 0.05
+    presence_penalty: 0.05
+
+  # LinkedIn content generation
+  linkedin:
+    max_tokens: 3000
+    temperature: 0.6
+    top_p: 0.9
+    frequency_penalty: 0.1
+    presence_penalty: 0.1
+
+  # TikTok content generation
+  tiktok:
+    max_tokens: 150
+    temperature: 0.9
+    top_p: 0.95
+    frequency_penalty: 0.05
+    presence_penalty: 0.05
+
+# Prompt templates for social media content
+prompt_templates:
+  twitter_post:
+    system: "You are an expert social media content creator specializing in affiliate marketing. Create engaging Twitter posts (max 280 characters) that drive engagement and conversions. Use relevant hashtags and maintain a conversational tone."
+    user: "Generate a Twitter post about: {topic}. Tone: {tone}. Include relevant hashtags."
+
+  instagram_caption:
+    system: "You are an Instagram expert. Create engaging captions with emojis and hashtags that drive engagement and conversions for affiliate marketing."
+    user: "Generate an Instagram caption about: {topic}. Tone: {tone}. Include emojis and hashtags."
+
+  linkedin_post:
+    system: "You are a LinkedIn professional content creator. Create business-focused posts that establish authority and drive professional engagement."
+    user: "Generate a LinkedIn post about: {topic}. Tone: {tone}. Keep it professional and business-focused."
+
+  hashtag_generation:
+    system: "You are a hashtag expert. Generate relevant, trending hashtags that will increase reach and engagement on social media platforms."
+    user: "Generate {count} relevant hashtags for {topic} on {platform}. Return only the hashtags separated by spaces."
+
+  sentiment_analysis:
+    system: "Analyze the sentiment of the given text. Return only: positive, negative, or neutral."
+    user: "{text}"
+
+  engagement_prediction:
+    system: "You are a social media analytics expert. Predict engagement metrics for the given content."
+    user: "Predict engagement for this {platform} content targeting {audience}: \"{content}\". Return a JSON with: likes, comments, shares, reach_estimate"
+
+# Health check configuration
+health_check:
+  enabled: true
+  interval: 30s
+  timeout: 10s
+  failure_threshold: 3
+
+# Metrics and monitoring
+metrics:
+  enabled: true
+  port: 9090
+  path: /metrics
+  collect_interval: 15s 

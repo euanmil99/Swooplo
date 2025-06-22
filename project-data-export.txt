@@ -1,0 +1,411 @@
+SOCIAL AFFILIATE PRO - COMPLETE PROJECT DATA EXPORT
+===================================================
+
+PROJECT OVERVIEW
+================
+Name: Social Affiliate Pro
+Version: 1.0.0
+Description: Advanced social media affiliate management platform with AI-powered content generation and analytics
+Main Entry: server/index.ts
+License: MIT
+Author: Social Affiliate Pro Team
+Node Version: >=18.0.0
+
+PROJECT STRUCTURE
+=================
+Root Directory: /D:/SocialPilot
+
+Files:
+- project-structure.txt (3.7KB, 155 lines) - Complete project file listing
+- projet-structure.txt (30B, 2 lines) - Brief project structure
+- bash.exe.stackdump (2.0KB, 40 lines) - Bash error dump
+- package.json (3.6KB, 114 lines) - Project configuration and dependencies
+- AFFILIATE_MARKETPLACES.md (6.9KB, 285 lines) - Affiliate marketplace documentation
+- package-lock.json (382KB, 10773 lines) - Dependency lock file
+- SLACK_API_INTEGRATION_CHAT.md (1.0B, 1 line) - Slack integration chat log
+- SLACK_INTEGRATION.md (9.2KB, 365 lines) - Slack integration documentation
+- PRICING_AND_LIMITS.md (13KB, 521 lines) - Pricing and usage limits
+- README.md (9.9KB, 290 lines) - Main project documentation
+- LOCALAI_INTEGRATION.md (14KB, 538 lines) - LocalAI integration guide
+- docker-compose.yml (4.9KB, 185 lines) - Docker services configuration
+- FEATURES.md (11KB, 336 lines) - Detailed features documentation
+- replit.md (9.6KB, 199 lines) - Replit deployment guide
+- .replit (676B, 37 lines) - Replit configuration
+- .gitignore (67B, 6 lines) - Git ignore rules
+- components.json (459B, 20 lines) - UI components configuration
+- drizzle.config.ts (325B, 15 lines) - Database ORM configuration
+- postcss.config.js (80B, 7 lines) - PostCSS configuration
+- tailwind.config.ts (2.6KB, 91 lines) - Tailwind CSS configuration
+- tsconfig.json (657B, 24 lines) - TypeScript configuration
+- vite.config.ts (971B, 38 lines) - Vite build configuration
+
+Directories:
+- node_modules/ - Dependencies
+- scripts/ - Setup and utility scripts
+- .vscode/ - VS Code configuration
+- server/ - Backend server code
+- localai-config/ - LocalAI configuration
+- client/ - Frontend React application
+- shared/ - Shared code and schemas
+- .git/ - Git repository
+
+PACKAGE.JSON CONFIGURATION
+==========================
+{
+  "name": "social-affiliate-pro",
+  "version": "1.0.0",
+  "description": "Advanced social media affiliate management platform with AI-powered content generation and analytics",
+  "main": "server/index.ts",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "tsx watch server/index.ts",
+    "dev:client": "vite",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "vite build",
+    "build:server": "tsx server/index.ts",
+    "start": "node dist/server/index.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
+  }
+}
+
+KEY DEPENDENCIES
+================
+Backend Dependencies:
+- express: ^4.18.2 - Web framework
+- drizzle-orm: ^0.29.3 - Database ORM
+- passport: ^0.7.0 - Authentication
+- bcryptjs: ^2.4.3 - Password hashing
+- jsonwebtoken: ^9.0.2 - JWT tokens
+- stripe: ^14.10.0 - Payment processing
+- openai: ^4.20.1 - AI integration
+- ws: ^8.14.2 - WebSocket support
+- node-cron: ^3.0.3 - Scheduled tasks
+- puppeteer: ^21.6.1 - Web scraping
+
+Frontend Dependencies:
+- react: ^18.2.0 - UI framework
+- react-dom: ^18.2.0 - React DOM
+- react-router-dom: ^6.20.1 - Routing
+- react-hook-form: ^7.48.2 - Form handling
+- zustand: ^4.4.7 - State management
+- framer-motion: ^10.16.16 - Animations
+- react-query: ^3.39.3 - Data fetching
+- recharts: ^2.8.0 - Charts and graphs
+- lucide-react: ^0.294.0 - Icons
+
+UI Components:
+- @radix-ui/react-* - Various UI components
+- class-variance-authority: ^0.7.0 - Component variants
+- tailwind-merge: ^2.2.0 - Tailwind utilities
+- tailwindcss-animate: ^1.0.7 - Animations
+
+Development Dependencies:
+- typescript: ^5.3.3 - Type safety
+- vite: ^5.0.10 - Build tool
+- tailwindcss: ^3.3.6 - CSS framework
+- eslint: ^8.56.0 - Code linting
+- drizzle-kit: ^0.20.9 - Database migrations
+
+DOCKER COMPOSE SERVICES
+=======================
+1. postgres (PostgreSQL Database)
+   - Image: postgres:15-alpine
+   - Port: 5432
+   - Database: socialpilot
+   - User: socialpilot
+
+2. redis (Redis Cache)
+   - Image: redis:7-alpine
+   - Port: 6379
+   - Purpose: Caching and sessions
+
+3. localai (AI Processing)
+   - Image: localai/localai:latest-aio-gpu
+   - Port: 8080
+   - GPU support for AI models
+   - Models: Llama 3.2, Stable Diffusion, Whisper
+
+4. backend (API Server)
+   - Custom build from Dockerfile.backend
+   - Port: 5000
+   - Environment: Node.js with TypeScript
+   - Dependencies: postgres, redis, localai
+
+5. frontend (React Client)
+   - Custom build from Dockerfile.frontend
+   - Port: 3000
+   - Environment: React with Vite
+   - Dependencies: backend
+
+6. nginx (Reverse Proxy)
+   - Image: nginx:alpine
+   - Ports: 80, 443
+   - SSL/TLS termination
+   - Load balancing
+
+7. prometheus (Monitoring)
+   - Image: prom/prometheus:latest
+   - Port: 9090
+   - Metrics collection
+
+8. grafana (Dashboard)
+   - Image: grafana/grafana:latest
+   - Port: 3001
+   - Monitoring visualization
+
+9. backup (Database Backup)
+   - Image: postgres:15-alpine
+   - Automated daily backups
+
+APPLICATION ARCHITECTURE
+========================
+Frontend (React + TypeScript):
+- App.tsx: Main application component with routing
+- Pages: Dashboard, Campaigns, Analytics, AffiliateLinks, Marketplaces, Settings
+- Components: Sidebar, Header, AIContentGenerator, DnsManager, SlackIntegration
+- UI Components: Button, Checkbox, Dropdown, Input, Table
+- Hooks: useAuth for authentication
+- Libraries: API client, utilities
+
+Backend (Node.js + Express + TypeScript):
+- Server: Express.js with TypeScript
+- Database: PostgreSQL with Drizzle ORM
+- Authentication: Passport.js with JWT
+- Real-time: WebSocket support
+- AI Integration: LocalAI for content generation
+- Social Media: Multi-platform API integration
+- Analytics: Real-time performance tracking
+
+Routes:
+- /api/auth - Authentication endpoints
+- /api/dashboard - Dashboard data
+- /api/social - Social media management
+- /api/affiliate - Affiliate link management
+- /api/campaigns - Campaign management
+- /api/analytics - Analytics and reporting
+- /api/earnings - Revenue tracking
+- /api/settings - User settings
+- /api/webhooks - External integrations
+- /api/ai - AI content generation
+- /api/slack - Slack integration
+
+KEY FEATURES
+============
+1. Multi-Platform Social Media Management
+   - Instagram, Twitter/X, LinkedIn, TikTok, Facebook, YouTube
+   - OAuth 2.0 authentication
+   - Automated posting and scheduling
+   - Cross-platform campaign synchronization
+
+2. AI-Powered Content Generation
+   - LocalAI integration for privacy-first AI
+   - Platform-specific content optimization
+   - Image generation with Stable Diffusion
+   - Audio processing with Whisper
+   - Hashtag optimization
+   - Content variations for A/B testing
+
+3. Smart Affiliate Link Management
+   - Dynamic link generation
+   - Click tracking and analytics
+   - Geographic targeting
+   - Device optimization
+   - Fraud detection
+   - Commission tracking
+
+4. Advanced Analytics & Reporting
+   - Real-time dashboard
+   - Revenue tracking
+   - Engagement analysis
+   - Geographic performance
+   - Device performance
+   - ROI optimization
+
+5. Campaign Management
+   - Multi-platform campaigns
+   - Advanced scheduling
+   - Automation workflows
+   - Performance monitoring
+   - AI-powered optimization
+
+6. Security & Compliance
+   - JWT authentication
+   - Rate limiting
+   - Data encryption
+   - GDPR compliance
+   - Audit logging
+
+SUBSCRIPTION TIERS
+==================
+Basic Plan - $29/month:
+- 5 active campaigns
+- 2 social media accounts
+- 50 affiliate links per month
+- Basic analytics
+- Email support
+
+Pro Plan - $79/month:
+- 25 active campaigns
+- 10 social media accounts
+- 500 affiliate links per month
+- Advanced analytics
+- AI content generation
+- A/B testing
+- Priority support
+
+Enterprise Plan - $199/month:
+- Unlimited campaigns
+- Unlimited social accounts
+- Unlimited affiliate links
+- All advanced features
+- Custom integrations
+- Dedicated support
+- White-label options
+
+TECHNOLOGY STACK
+================
+Backend:
+- Node.js with Express.js
+- TypeScript for type safety
+- PostgreSQL with Drizzle ORM
+- Redis for caching
+- WebSocket for real-time updates
+
+Frontend:
+- React 18 with TypeScript
+- Vite for fast development
+- Tailwind CSS for styling
+- React Router for navigation
+- React Query for data fetching
+
+AI & ML:
+- LocalAI for self-hosted AI
+- Llama 3.2 for text generation
+- Stable Diffusion for images
+- Whisper for audio processing
+
+Infrastructure:
+- Docker and Docker Compose
+- Nginx reverse proxy
+- Prometheus and Grafana monitoring
+- Automated backups
+- SSL/TLS encryption
+
+DEVELOPMENT SETUP
+=================
+Prerequisites:
+- Docker and Docker Compose
+- Node.js 18+
+- 8GB+ RAM (16GB recommended)
+- NVIDIA GPU (optional, for AI features)
+
+Quick Start:
+1. Clone repository
+2. Run setup script: ./scripts/setup-localai.sh
+3. Configure environment variables
+4. Start services: docker-compose up -d
+5. Access application at http://localhost
+
+Development Commands:
+- npm run dev - Start development servers
+- npm run build - Build for production
+- npm run db:generate - Generate database migrations
+- npm run db:migrate - Run database migrations
+- npm run db:studio - Open database studio
+
+MONITORING & ANALYTICS
+======================
+- Prometheus for metrics collection
+- Grafana for visualization (admin/admin123)
+- Real-time WebSocket updates
+- Performance monitoring
+- Error tracking
+- Usage analytics
+
+SECURITY FEATURES
+=================
+- JWT-based authentication
+- Session management with PostgreSQL
+- Rate limiting and abuse prevention
+- CORS configuration
+- Helmet.js security headers
+- Data encryption at rest
+- Audit logging
+- Two-factor authentication support
+
+COMPLIANCE & ETHICS
+===================
+- GDPR compliance
+- FTC disclosure requirements
+- Platform-specific rules compliance
+- Ethical marketing practices
+- Transparency tools
+- Data retention policies
+- Privacy-first AI processing
+
+INTEGRATIONS
+============
+Social Media Platforms:
+- Instagram API
+- Twitter/X API
+- LinkedIn API
+- TikTok API
+- Facebook API
+- YouTube API
+
+Affiliate Networks:
+- ClickBank
+- Amazon Associates
+- ShareASale
+- Commission Junction
+- Rakuten Marketing
+- Awin
+
+Payment Processing:
+- Stripe integration
+
+AI Services:
+- LocalAI (self-hosted)
+- OpenAI GPT-4 (optional)
+
+Communication:
+- Slack integration
+- Email notifications
+- Webhook support
+
+DEPLOYMENT OPTIONS
+==================
+1. Docker Compose (Recommended)
+   - Complete containerized setup
+   - Easy scaling and management
+   - Production-ready configuration
+
+2. Replit Deployment
+   - Cloud-based development
+   - Automatic deployment
+   - Collaborative features
+
+3. Traditional VPS
+   - Manual server setup
+   - Full control over infrastructure
+   - Custom configurations
+
+4. Cloud Platforms
+   - AWS, Google Cloud, Azure
+   - Kubernetes deployment
+   - Auto-scaling capabilities
+
+PROJECT STATUS
+==============
+- Active development
+- Production-ready features
+- Comprehensive documentation
+- Docker containerization
+- AI integration complete
+- Multi-platform support
+- Advanced analytics
+- Security implementation
+
+This export contains all the essential information about the Social Affiliate Pro project, including architecture, features, configuration, and deployment details. 
