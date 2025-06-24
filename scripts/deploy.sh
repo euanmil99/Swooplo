@@ -110,14 +110,32 @@ deploy() {
     if curl -f http://localhost:5000/health >/dev/null 2>&1; then
         print_success "Backend is healthy"
     else
-        print_warning "Backend health check failed"
+        print_error "Backend health check failed"
+        exit 1
     fi
     
     # Check frontend health
     if curl -f http://localhost:3000 >/dev/null 2>&1; then
         print_success "Frontend is healthy"
     else
-        print_warning "Frontend health check failed"
+        print_error "Frontend health check failed"
+        exit 1
+    fi
+    
+    # Check database health (PostgreSQL)
+    if docker-compose -f $DOCKER_COMPOSE_FILE exec -T postgres pg_isready -U swooplo_user >/dev/null 2>&1; then
+        print_success "Database is healthy"
+    else
+        print_error "Database health check failed"
+        exit 1
+    fi
+    
+    # Check SSL certificate (if enabled)
+    if openssl s_client -connect $DOMAIN:443 </dev/null 2>/dev/null | openssl x509 -noout -dates; then
+        print_success "SSL certificate is valid"
+    else
+        print_error "SSL certificate check failed"
+        exit 1
     fi
     
     print_success "Deployment completed successfully!"

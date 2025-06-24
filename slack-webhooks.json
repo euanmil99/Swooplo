@@ -1,0 +1,9 @@
+{
+  "baseUrl": "https://swooplo.com/",
+  "webhookUrls": {
+    "events": "https://swooplo.com//api/slack/events",
+    "interactive": "https://swooplo.com//api/slack/interactive",
+    "commands": "https://swooplo.com//api/slack/commands"
+  },
+  "timestamp": "2025-06-24T17:18:13Z"
+}

@@ -3,6 +3,7 @@ import { localAI } from '../services/localai.js';
 import { authenticateUser, requireSubscriptionTier } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { z } from 'zod';
+import { getChatCompletion } from '../services/openaiService';
 
 const router = Router();
 
@@ -593,6 +594,19 @@ router.post('/optimize-campaign',
         generatedAt: new Date().toISOString()
       }
     });
+  })
+);
+
+// OpenAI chat completion endpoint
+router.post('/openai-completion',
+  authenticateUser,
+  asyncHandler(async (req, res) => {
+    const { prompt } = req.body;
+    if (!prompt || typeof prompt !== 'string') {
+      return res.status(400).json({ error: 'Prompt is required' });
+    }
+    const result = await getChatCompletion(prompt);
+    res.json({ result });
   })
 );
 

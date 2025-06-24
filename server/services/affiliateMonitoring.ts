@@ -405,4 +405,40 @@ export class ConsoleNotificationService implements NotificationService {
     const emoji = alert.severity === 'high' ? '🚨' : alert.severity === 'medium' ? '⚠️' : 'ℹ️';
     console.log(`${emoji} ALERT: ${alert.message}`, alert.details);
   }
-} 
+}
+
+// Skeleton monitor and error handler for ClickBank
+class ClickBankMonitor implements NetworkMonitor {
+  async monitorApiStatus() {
+    return {
+      status: 'warning',
+      responseTime: 0,
+      lastChecked: new Date(),
+      error: 'Not implemented',
+    };
+  }
+  async checkLinkHealth() {
+    return {
+      validLinks: [],
+      invalidLinks: [],
+      suggestedFixes: {},
+      timestamp: new Date(),
+    };
+  }
+  async testConnection() { return false; }
+}
+class ClickBankErrorHandler implements ErrorHandler {
+  async handleIssue(issueType: string, context: any) {
+    return { success: false, details: 'Not implemented', timestamp: new Date() };
+  }
+}
+
+// Skeletons for CJ, ShareASale, Rakuten, Awin
+class CJMonitor extends ClickBankMonitor {}
+class CJErrorHandler extends ClickBankErrorHandler {}
+class ShareASaleMonitor extends ClickBankMonitor {}
+class ShareASaleErrorHandler extends ClickBankErrorHandler {}
+class RakutenMonitor extends ClickBankMonitor {}
+class RakutenErrorHandler extends ClickBankErrorHandler {}
+class AwinMonitor extends ClickBankMonitor {}
+class AwinErrorHandler extends ClickBankErrorHandler {} 
