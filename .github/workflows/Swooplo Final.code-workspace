@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+			"path": "D:/SocialPilot"
+		}
+	],
+	"settings": {
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+
+// Implement a caching layer for similar content requests
+const contentCache = new Map();
+   
+// Before generating content
+const cacheKey = `${platform}-${topic}-${tone}`;
+if (contentCache.has(cacheKey)) {
+  return contentCache.get(cacheKey);
+}
+   
+// After generating content
+contentCache.set(cacheKey, generatedContent);// Example: Use previous performance data to guide generation
+const previousPerformance = await getContentPerformance(userId, topic);
+const optimizedPrompt = enhancePromptWithPerformanceData(basePrompt, previousPerformance);{
+	{
+		"scripts": {
+		  "build:server": "tsc -p tsconfig.server.json",
+		  "other-script": "command"
+		}
+	  }
+	  
