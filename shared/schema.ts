@@ -433,6 +433,35 @@ export const userSubscriptions = pgTable('user_subscriptions', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// Email subscribers table for affiliate marketing campaigns
+export const emailSubscribers = pgTable('email_subscribers', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  campaignId: uuid('campaign_id').notNull().references(() => campaigns.id, { onDelete: 'cascade' }),
+  email: varchar('email', { length: 255 }).notNull(),
+  source: text('source').notNull(), // Website URL, social media profile, etc.
+  platform: varchar('platform', { length: 50 }).default('website'), // website, linkedin, twitter, instagram, facebook
+  isActive: boolean('is_active').default(true),
+  isVerified: boolean('is_verified').default(false),
+  subscribedAt: timestamp('subscribed_at').defaultNow(),
+  unsubscribedAt: timestamp('unsubscribed_at'),
+  lastEmailSentAt: timestamp('last_email_sent_at'),
+  emailSentCount: integer('email_sent_count').default(0),
+  openCount: integer('open_count').default(0),
+  clickCount: integer('click_count').default(0),
+  bounceCount: integer('bounce_count').default(0),
+  spamReportCount: integer('spam_report_count').default(0),
+  metadata: jsonb('metadata'), // Additional data like location, interests, etc.
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  userIdIdx: index('email_user_id_idx').on(table.userId),
+  campaignIdIdx: index('email_campaign_id_idx').on(table.campaignId),
+  emailIdx: index('email_email_idx').on(table.email),
+  activeIdx: index('email_active_idx').on(table.isActive),
+  platformIdx: index('email_platform_idx').on(table.platform),
+}));
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   socialAccounts: many(socialAccounts),
@@ -440,6 +469,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   campaigns: many(campaigns),
   earnings: many(earnings),
   fraudLogs: many(fraudLogs),
+  emailSubscribers: many(emailSubscribers),
 }));
 
 export const socialAccountsRelations = relations(socialAccounts, ({ one, many }) => ({

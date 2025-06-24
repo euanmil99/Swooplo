@@ -1,0 +1,137 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: swooplo-postgres
+    environment:
+      POSTGRES_DB: swooplo
+      POSTGRES_USER: swooplo_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - swooplo-network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: swooplo-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - swooplo-network
+
+  # Backend API Server
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: swooplo-backend
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://swooplo_user:${POSTGRES_PASSWORD}@postgres:5432/swooplo
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      SESSION_SECRET: ${SESSION_SECRET}
+      CLIENT_URL: https://swooplo.com
+      BASE_URL: https://swooplo.com
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      CLICKBANK_API_KEY: ${CLICKBANK_API_KEY}
+      AMAZON_ASSOCIATES_TAG: ${AMAZON_ASSOCIATES_TAG}
+      LOCALAI_API_KEY: ${LOCALAI_API_KEY}
+      LOCALAI_BASE_URL: ${LOCALAI_BASE_URL}
+      SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
+      SLACK_SIGNING_SECRET: ${SLACK_SIGNING_SECRET}
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - swooplo-network
+    volumes:
+      - ./uploads:/app/uploads
+
+  # Frontend Client
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: swooplo-frontend
+    environment:
+      VITE_API_URL: https://api.swooplo.com
+      VITE_APP_NAME: Swooplo
+      VITE_APP_DESCRIPTION: AI-Powered Social Media & Affiliate Marketing Platform
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - swooplo-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: swooplo-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+    networks:
+      - swooplo-network
+
+  # LocalAI Service (Optional - for AI features)
+  localai:
+    image: localai/localai:latest
+    container_name: swooplo-localai
+    environment:
+      LOCALAI_API_KEY: ${LOCALAI_API_KEY}
+      LOCALAI_BASE_URL: http://localhost:8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./localai-config:/config
+      - ./models:/models
+    restart: unless-stopped
+    networks:
+      - swooplo-network
+
+  # Certbot for SSL certificates
+  certbot:
+    image: certbot/certbot
+    container_name: swooplo-certbot
+    volumes:
+      - ./ssl:/etc/letsencrypt
+      - ./logs/certbot:/var/log/letsencrypt
+    command: certonly --webroot --webroot-path=/var/www/html --email ${CERTBOT_EMAIL} --agree-tos --no-eff-email -d swooplo.com -d www.swooplo.com -d api.swooplo.com
+    depends_on:
+      - nginx
+    networks:
+      - swooplo-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  swooplo-network:
+    driver: bridge 

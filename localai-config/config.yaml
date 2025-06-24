@@ -74,53 +74,90 @@ galleries:
     url: "https://raw.githubusercontent.com/go-skynet/model-gallery/index/"
     gallery: "https://github.com/go-skynet/model-gallery/raw/main/"
 
-# CORS configuration
+# CORS configuration - RESTRICTED for security
 cors:
   allowed_origins:
     - "http://localhost:3000"
     - "http://localhost:5000"
-    - "https://socialpilot.com"
+    # Remove production domain until properly configured
+    # - "https://socialpilot.com"
   allowed_methods:
     - GET
     - POST
-    - PUT
-    - DELETE
     - OPTIONS
   allowed_headers:
     - Content-Type
     - Authorization
     - X-Requested-With
+    - X-API-Key
 
-# Rate limiting
+# Rate limiting - ENHANCED for security
 rate_limit:
   enabled: true
-  requests_per_minute: 60
-  burst_size: 10
+  requests_per_minute: 30  # Reduced from 60
+  burst_size: 5  # Reduced from 10
+  per_user_limit: true
+  user_identifier: "api_key"  # Use API key for user identification
 
-# Logging configuration
+# Logging configuration - SECURE
 logging:
-  level: info
+  level: warn  # Changed from info to reduce sensitive data exposure
   format: json
   output: stdout
+  # Add log rotation and security
+  max_size: "100MB"
+  max_files: 5
+  sensitive_fields:
+    - "api_key"
+    - "access_token"
+    - "refresh_token"
+    - "password"
 
 # Cache configuration
 cache:
   enabled: true
-  ttl: 3600
-  max_size: 1000
+  ttl: 1800  # Reduced from 3600 for security
+  max_size: 500  # Reduced from 1000
+  # Add cache security
+  encrypt_sensitive_data: true
+  cache_headers: false
 
-# Security configuration
+# Security configuration - CRITICAL FIXES
 security:
-  api_key_required: false
-  allowed_ips: []
-  max_request_size: "10MB"
+  api_key_required: true  # CHANGED: Now required
+  api_key_header: "X-API-Key"
+  api_key_validation: true
+  allowed_ips: 
+    - "127.0.0.1"
+    - "::1"
+    # Add production IPs when deployed
+  max_request_size: "5MB"  # Reduced from 10MB
+  # Additional security measures
+  enable_ssl: true
+  ssl_cert_file: "/path/to/cert.pem"
+  ssl_key_file: "/path/to/key.pem"
+  # Input validation
+  validate_input: true
+  max_input_length: 10000
+  # Session security
+  session_timeout: 3600
+  secure_cookies: true
+  # Content security
+  content_security_policy: true
+  xss_protection: true
+  # Rate limiting per API key
+  rate_limit_per_key: true
+  max_requests_per_key_per_minute: 20
 
 # Performance optimization
 performance:
-  enable_metrics: true
+  enable_metrics: false  # Disabled for security
   enable_profiling: false
-  max_concurrent_requests: 10
-  request_timeout: 300
+  max_concurrent_requests: 5  # Reduced from 10
+  request_timeout: 120  # Reduced from 300
+  # Add performance security
+  memory_limit: "2GB"
+  cpu_limit: "80%"
 
 # Model-specific optimizations for social media content
 social_media_models:
@@ -159,16 +196,16 @@ social_media_models:
 # Prompt templates for social media content
 prompt_templates:
   twitter_post:
-    system: "You are an expert social media content creator specializing in affiliate marketing. Create engaging Twitter posts (max 280 characters) that drive engagement and conversions. Use relevant hashtags and maintain a conversational tone."
-    user: "Generate a Twitter post about: {topic}. Tone: {tone}. Include relevant hashtags."
+    system: "You are an expert social media content creator specializing in affiliate marketing. Create engaging Twitter posts (max 280 characters) that drive engagement and conversions. Use relevant hashtags and maintain a conversational tone. ALWAYS include proper disclosure tags like #ad or #affiliate when promoting products."
+    user: "Generate a Twitter post about: {topic}. Tone: {tone}. Include relevant hashtags and proper disclosure."
 
   instagram_caption:
-    system: "You are an Instagram expert. Create engaging captions with emojis and hashtags that drive engagement and conversions for affiliate marketing."
-    user: "Generate an Instagram caption about: {topic}. Tone: {tone}. Include emojis and hashtags."
+    system: "You are an Instagram expert. Create engaging captions with emojis and hashtags that drive engagement and conversions for affiliate marketing. ALWAYS include proper disclosure tags like #ad or #affiliate when promoting products."
+    user: "Generate an Instagram caption about: {topic}. Tone: {tone}. Include emojis, hashtags, and proper disclosure."
 
   linkedin_post:
-    system: "You are a LinkedIn professional content creator. Create business-focused posts that establish authority and drive professional engagement."
-    user: "Generate a LinkedIn post about: {topic}. Tone: {tone}. Keep it professional and business-focused."
+    system: "You are a LinkedIn professional content creator. Create business-focused posts that establish authority and drive professional engagement. ALWAYS include proper disclosure when promoting affiliate products."
+    user: "Generate a LinkedIn post about: {topic}. Tone: {tone}. Keep it professional, business-focused, and include proper disclosure."
 
   hashtag_generation:
     system: "You are a hashtag expert. Generate relevant, trending hashtags that will increase reach and engagement on social media platforms."
@@ -181,6 +218,53 @@ prompt_templates:
   engagement_prediction:
     system: "You are a social media analytics expert. Predict engagement metrics for the given content."
     user: "Predict engagement for this {platform} content targeting {audience}: \"{content}\". Return a JSON with: likes, comments, shares, reach_estimate"
+
+  # SEO Enhancement prompt templates
+  seo_optimization:
+    system: "You are an SEO expert. Optimize content for better search rankings while maintaining engagement."
+    user: "Optimize this content for SEO in the {industry} industry. Target keywords: {keywords}. Content: \"{content}\""
+
+  content_calendar:
+    system: "You are a content strategy expert. Create content calendars based on trending topics and industry insights."
+    user: "Generate a {timeframe} content calendar for {industry} focused on {platforms}. Include trending topics, seasonal themes, and evergreen content ideas."
+
+  keyword_research:
+    system: "You are a keyword research expert. Generate valuable keyword insights for content creators."
+    user: "Perform keyword research for \"{topic}\" in the {industry} industry. Include primary keywords, long-tail variations, related terms, and search intent."
+
+  topic_cluster:
+    system: "You are a content strategist specializing in topic clusters and pillar content. Create comprehensive topic clusters for SEO."
+    user: "Generate a topic cluster for \"{main_topic}\" in the {industry} industry. Include a main pillar topic and {depth} levels of subtopics with supporting content ideas, keywords, and internal linking suggestions."
+
+# Additional security configurations
+authentication:
+  # API key management
+  api_key_rotation: true
+  api_key_expiry_days: 90
+  # JWT configuration (if using JWT)
+  jwt_secret: "${JWT_SECRET}"  # Use environment variable
+  jwt_expiry_hours: 24
+  # OAuth configuration (if using OAuth)
+  oauth_enabled: false
+  oauth_providers: []
+
+# Monitoring and alerting
+monitoring:
+  enabled: true
+  health_check_endpoint: "/health"
+  metrics_endpoint: "/metrics"
+  # Security monitoring
+  failed_auth_threshold: 5
+  suspicious_activity_detection: true
+  alert_on_security_events: true
+
+# Backup and recovery
+backup:
+  enabled: true
+  frequency: "daily"
+  retention_days: 30
+  encryption: true
+  backup_location: "/secure/backup/location"
 
 # Health check configuration
 health_check:

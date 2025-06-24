@@ -3,11 +3,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import Dashboard from './pages/Dashboard';
-import Campaigns from './pages/Campaigns';
+import EnhancedDashboard from './pages/EnhancedDashboard';
 import Analytics from './pages/Analytics';
+import Campaigns from './pages/Campaigns';
 import AffiliateLinks from './pages/AffiliateLinks';
 import Marketplaces from './pages/Marketplaces';
+import SEO from './pages/SEO';
 import Settings from './pages/Settings';
+import EmailScraper from './components/EmailScraper';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import './index.css';
@@ -18,23 +21,26 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <div className="flex h-screen bg-gray-50">
-          <Sidebar />
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <Header />
-            <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
+        <div className="min-h-screen bg-gray-50">
+          <Header />
+          <div className="flex">
+            <Sidebar />
+            <main className="flex-1 p-6">
               <Routes>
                 <Route path="/" element={<Dashboard />} />
-                <Route path="/campaigns" element={<Campaigns />} />
+                <Route path="/enhanced-dashboard" element={<EnhancedDashboard />} />
                 <Route path="/analytics" element={<Analytics />} />
+                <Route path="/campaigns" element={<Campaigns />} />
                 <Route path="/affiliate-links" element={<AffiliateLinks />} />
                 <Route path="/marketplaces" element={<Marketplaces />} />
+                <Route path="/seo" element={<SEO />} />
+                <Route path="/email-scraper" element={<EmailScraper />} />
                 <Route path="/settings" element={<Settings />} />
               </Routes>
             </main>
           </div>
+          <Toaster position="top-right" />
         </div>
-        <Toaster position="top-right" />
       </Router>
     </QueryClientProvider>
   );

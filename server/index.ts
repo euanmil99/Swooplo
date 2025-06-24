@@ -26,6 +26,8 @@ import { settingsRoutes } from './routes/settings.js';
 import { webhookRoutes } from './routes/webhooks.js';
 import { aiRoutes } from './routes/ai.js';
 import { slackRoutes } from './routes/slack.js';
+import { diversificationRoutes } from './routes/diversification.js';
+import emailScraperRoutes from './routes/emailScraper.js';
 
 // Import middleware
 import { authenticateUser } from './middleware/auth.js';
@@ -104,6 +106,8 @@ app.use('/api/settings', authenticateUser, settingsRoutes);
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api/ai', authenticateUser, aiRoutes);
 app.use('/api/slack', slackRoutes);
+app.use('/api/diversification', diversificationRoutes);
+app.use('/api/emailScraper', emailScraperRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {

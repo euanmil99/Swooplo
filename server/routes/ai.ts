@@ -56,6 +56,30 @@ const trendingTopicsSchema = z.object({
   industry: z.string().min(1).max(200)
 });
 
+// SEO Enhancement validation schemas
+const seoOptimizationSchema = z.object({
+  content: z.string().min(1).max(5000),
+  keywords: z.array(z.string()).min(1).max(20),
+  industry: z.string().min(1).max(200)
+});
+
+const contentCalendarSchema = z.object({
+  industry: z.string().min(1).max(200),
+  timeframe: z.enum(['weekly', 'monthly', 'quarterly']),
+  platforms: z.array(z.string()).min(1).max(6)
+});
+
+const keywordResearchSchema = z.object({
+  topic: z.string().min(1).max(200),
+  industry: z.string().min(1).max(200)
+});
+
+const topicClusterSchema = z.object({
+  mainTopic: z.string().min(1).max(200),
+  industry: z.string().min(1).max(200),
+  depth: z.number().min(1).max(5).optional()
+});
+
 // Generate social media content
 router.post('/generate-content', 
   authenticateUser, 
@@ -320,6 +344,93 @@ router.post('/trending-topics',
         platform,
         industry,
         analyzedAt: new Date().toISOString()
+      }
+    });
+  })
+);
+
+// SEO Content Optimization
+router.post('/seo-optimize',
+  authenticateUser,
+  requireSubscriptionTier('pro'),
+  asyncHandler(async (req, res) => {
+    const { content, keywords, industry } = seoOptimizationSchema.parse(req.body);
+    
+    const optimizedContent = await localAI.optimizeContentForSEO(content, keywords, industry);
+    
+    res.json({
+      success: true,
+      data: {
+        ...optimizedContent,
+        originalContent: content,
+        keywords,
+        industry,
+        optimizedAt: new Date().toISOString()
+      }
+    });
+  })
+);
+
+// Content Calendar Planning
+router.post('/content-calendar',
+  authenticateUser,
+  requireSubscriptionTier('pro'),
+  asyncHandler(async (req, res) => {
+    const { industry, timeframe, platforms } = contentCalendarSchema.parse(req.body);
+    
+    const calendar = await localAI.generateContentCalendar(industry, timeframe, platforms);
+    
+    res.json({
+      success: true,
+      data: {
+        ...calendar,
+        industry,
+        timeframe,
+        platforms,
+        generatedAt: new Date().toISOString()
+      }
+    });
+  })
+);
+
+// Keyword Research Integration
+router.post('/keyword-research',
+  authenticateUser,
+  requireSubscriptionTier('pro'),
+  asyncHandler(async (req, res) => {
+    const { topic, industry } = keywordResearchSchema.parse(req.body);
+    
+    const keywords = await localAI.performKeywordResearch(topic, industry);
+    
+    res.json({
+      success: true,
+      data: {
+        ...keywords,
+        topic,
+        industry,
+        researchedAt: new Date().toISOString()
+      }
+    });
+  })
+);
+
+// Topic Cluster Generator
+router.post('/topic-cluster',
+  authenticateUser,
+  requireSubscriptionTier('enterprise'),
+  asyncHandler(async (req, res) => {
+    const { mainTopic, industry, depth } = topicClusterSchema.parse(req.body);
+    
+    const cluster = await localAI.generateTopicCluster(mainTopic, industry, depth || 3);
+    
+    res.json({
+      success: true,
+      data: {
+        ...cluster,
+        mainTopic,
+        industry,
+        depth: depth || 3,
+        generatedAt: new Date().toISOString()
       }
     });
   })

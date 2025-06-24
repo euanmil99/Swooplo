@@ -10,7 +10,9 @@ import {
   Users,
   Target,
   Zap,
-  Globe
+  Globe,
+  Search,
+  Mail
 } from 'lucide-react';
 
 const navigation = [
@@ -19,6 +21,8 @@ const navigation = [
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Affiliate Links', href: '/affiliate-links', icon: Link },
   { name: 'Marketplaces', href: '/marketplaces', icon: ShoppingCart },
+  { name: 'SEO Tools', href: '/seo', icon: Search },
+  { name: 'Email Scraper', href: '/email-scraper', icon: Mail },
   { name: 'AI Content', href: '/ai-content', icon: Zap },
   { name: 'Social Media', href: '/social', icon: Globe },
   { name: 'Team', href: '/team', icon: Users },
@@ -34,7 +38,7 @@ const Sidebar: React.FC = () => {
           <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-bold text-gray-900">SocialPro</span>
+          <span className="text-xl font-bold text-gray-900">Swooplo</span>
         </div>
       </div>
 
